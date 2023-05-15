@@ -1,20 +1,11 @@
-# Import some necessary modules
-# pip install kafka-python
-# pip install pymongo
-# pip install "pymongo[srv]"
-from kafka import KafkaConsumer
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
-# import json
-# import streamlit as st
-# import pymongo
-
-
+import streamlit as st
 
 # replace here with your mongodb url 
 uri = "mongodb+srv://adsoft:adsoft-sito@cluster0.kzghgph.mongodb.net/?retryWrites=true&w=majority"
 
-# Connect to MongoDB and pizza_data database
+# Connect to meme MongoDB database
 
 try:
     client = MongoClient(uri, server_api=ServerApi('1'))
@@ -26,14 +17,22 @@ try:
 except:
     print("Could not connect to MongoDB")
 
+# streamlit run streamlit-mongo.py --server.enableCORS false --server.enableXsrfProtection false
 
-# Initialize connection.
-# Uses st.cache_resource to only run once.
-"""
-@st.cache
-def init_connection():
-    return pymongo.MongoClient(uri)
+st.title("mongo db conn")
+# Pull data from the collection.
+# Uses st.cache_data to only rerun when the query changes or after 10 min.
+@st.cache_data(ttl=600)
+def get_data():
+    items = db.memes_info.find()
+    items = list(items)  # make hashable for st.cache_data
+    return items
 
-client2 = init_connection()
-"""
+items = get_data()
 
+st.write('results...')
+st.write(items)
+
+# Print results.i
+for item in items:
+    st.write(f"{item['_id']} has a :{item['name']}:")
